@@ -7,11 +7,11 @@
     android:gravity="center"
     tools:context=".MainActivity">
 
-    <TextView
+    <TextView android:id="@+id/question_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="24dp"
-        android:text="@string/question_text" />
+        tools:text="@string/question_australia" />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -28,7 +28,28 @@
             android:id="@+id/false_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/false_button" />
+            android:text="@string/false_button"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <ImageButton
+            android:id="@+id/previous_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/previous_button"
+            android:src="@drawable/arrow_left" />
+
+        <ImageButton
+            android:id="@+id/next_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/next_button"
+            android:src="@drawable/arrow_right" />
 
     </LinearLayout>
 
