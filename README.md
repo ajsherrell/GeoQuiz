@@ -1,3 +1,3 @@
 # GeoQuiz
 
-A simple app that uses the MVC pattern.t
+A simple app that uses the MVC pattern.
