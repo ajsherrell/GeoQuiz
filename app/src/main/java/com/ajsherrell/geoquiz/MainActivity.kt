@@ -28,6 +28,8 @@ class MainActivity : AppCompatActivity() {
         Question(R.string.question_asia, true)
     )
     private var currentIndex = 0
+    private var lastIndex = 0
+    private var score = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,6 +52,7 @@ class MainActivity : AppCompatActivity() {
 
         nextButton.setOnClickListener {
             currentIndex = (currentIndex + 1) % questionBank.size
+            isAnswered(currentIndex)
             updateQuestion()
         }
 
@@ -60,13 +63,14 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        questionTextView.setOnClickListener {
-            currentIndex = (currentIndex + 1) % questionBank.size
-            updateQuestion()
-        }
-
         updateQuestion()
 
+    }
+
+    private fun isAnswered(index: Int) {
+        val isQuestionAnswered = questionBank[index].answered
+        trueButton.isEnabled = !isQuestionAnswered
+        falseButton.isEnabled = !isQuestionAnswered
     }
 
     override fun onStart() {
@@ -105,12 +109,24 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun checkAnswer(userAnswer: Boolean) {
-        val correctAnswer = questionBank[currentIndex].answer
+        // disable buttons when answered
+        trueButton.isEnabled = false
+        falseButton.isEnabled = false
+        questionBank[currentIndex].answered = true
 
-        val messageId = if (userAnswer == correctAnswer) {
-            R.string.correct_toast
+        val correctAnswer = questionBank[currentIndex].answer
+        var messageId = ""
+        lastIndex = questionBank.size - 1
+        if (userAnswer == correctAnswer) {
+            score+=1
+            messageId = getString(R.string.correct_toast)
+            Log.d(TAG, "Current score is: $score")
         } else {
-            R.string.incorrect_toast
+            messageId = getString(R.string.incorrect_toast)
+        }
+        if (questionBank[currentIndex] == questionBank[lastIndex]) {
+            messageId = getString(R.string.final_score) + score.toString()
+            previousButton.isEnabled = false
         }
 
         //reference: https://www.journaldev.com/96/android-toast-with-kotlin
