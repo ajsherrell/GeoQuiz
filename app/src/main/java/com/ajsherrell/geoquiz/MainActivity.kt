@@ -1,11 +1,12 @@
 package com.ajsherrell.geoquiz
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.Gravity
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity() {
 
@@ -78,6 +79,9 @@ class MainActivity : AppCompatActivity() {
             R.string.incorrect_toast
         }
 
-        Toast.makeText(this, messageId, Toast.LENGTH_SHORT).show()
+        //reference: https://www.journaldev.com/96/android-toast-with-kotlin
+        val toast = Toast.makeText(this, messageId, Toast.LENGTH_SHORT)
+        toast.setGravity(Gravity.TOP, 0, 250)
+        toast.show()
     }
 }
