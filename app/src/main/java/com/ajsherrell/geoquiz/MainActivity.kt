@@ -42,6 +42,8 @@ class MainActivity : AppCompatActivity() {
         previousButton = findViewById(R.id.previous_button)
         questionTextView = findViewById(R.id.question_text_view)
 
+        lastIndex = questionBank.size - 1
+
         trueButton.setOnClickListener {
             checkAnswer(true)
         }
@@ -52,6 +54,9 @@ class MainActivity : AppCompatActivity() {
 
         nextButton.setOnClickListener {
             currentIndex = (currentIndex + 1) % questionBank.size
+            if (currentIndex == lastIndex) {
+                nextButton.isEnabled = false
+            }
             isAnswered(currentIndex)
             updateQuestion()
         }
@@ -116,7 +121,6 @@ class MainActivity : AppCompatActivity() {
 
         val correctAnswer = questionBank[currentIndex].answer
         var messageId = ""
-        lastIndex = questionBank.size - 1
         if (userAnswer == correctAnswer) {
             score+=1
             messageId = getString(R.string.correct_toast)
