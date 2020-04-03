@@ -8,6 +8,7 @@ import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 
 private const val TAG = "MainActivity"
 
@@ -31,10 +32,20 @@ class MainActivity : AppCompatActivity() {
     private var lastIndex = 0
     private var score = 0
 
+    private val quizViewModel: QuizViewModel by lazy {
+        val factory = QuizViewModelFactory()
+        ViewModelProvider(this@MainActivity, factory).get(QuizViewModel::class.java)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d(TAG, "onCreate is called!!!")
         setContentView(R.layout.activity_main)
+
+        //depreciated
+//        val provider: ViewModelProvider = ViewModelProviders.of(this)
+//        val quizViewModel = provider.get(QuizViewModel::class.java)
+        Log.d(TAG, "Got a QuizViewModel: $quizViewModel")
 
         trueButton = findViewById(R.id.true_button)
         falseButton = findViewById(R.id.false_button)
