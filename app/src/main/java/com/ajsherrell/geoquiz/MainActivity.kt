@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 
 private const val TAG = "MainActivity"
+private const val KEY_INDEX = "index"
 
 class MainActivity : AppCompatActivity() {
 
@@ -20,19 +21,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var previousButton: ImageButton
     private lateinit var questionTextView: TextView
 
-    private val questionBank = listOf(
-        Question(R.string.question_australia, true),
-        Question(R.string.question_oceans, true),
-        Question(R.string.question_mideast, false),
-        Question(R.string.question_africa, false),
-        Question(R.string.question_americas, true),
-        Question(R.string.question_asia, true)
-    )
-    private var currentIndex = 0
-    private var lastIndex = 0
-    private var score = 0
-
-    private val quizViewModel: QuizViewModel by lazy {
+    private val model: QuizViewModel by lazy {
         val factory = QuizViewModelFactory()
         ViewModelProvider(this@MainActivity, factory).get(QuizViewModel::class.java)
     }
@@ -42,10 +31,13 @@ class MainActivity : AppCompatActivity() {
         Log.d(TAG, "onCreate is called!!!")
         setContentView(R.layout.activity_main)
 
+        val currentIndex = savedInstanceState?.getInt(KEY_INDEX, 0) ?: 0
+        model.currentIndex = currentIndex
+
         //depreciated
 //        val provider: ViewModelProvider = ViewModelProviders.of(this)
 //        val quizViewModel = provider.get(QuizViewModel::class.java)
-        Log.d(TAG, "Got a QuizViewModel: $quizViewModel")
+        Log.d(TAG, "Got a QuizViewModel: $model")
 
         trueButton = findViewById(R.id.true_button)
         falseButton = findViewById(R.id.false_button)
@@ -53,28 +45,30 @@ class MainActivity : AppCompatActivity() {
         previousButton = findViewById(R.id.previous_button)
         questionTextView = findViewById(R.id.question_text_view)
 
-        lastIndex = questionBank.size - 1
-
         trueButton.setOnClickListener {
+            model.currentQuestionAnswered = true
+            isAnswered()
             checkAnswer(true)
         }
 
         falseButton.setOnClickListener {
+            model.currentQuestionAnswered = true
+            isAnswered()
             checkAnswer(false)
         }
 
         nextButton.setOnClickListener {
-            currentIndex = (currentIndex + 1) % questionBank.size
-            if (currentIndex == lastIndex) {
+            model.moveToNext()
+            enableButtons()
+            if (model.currentIndex == model.lastIndex) {
                 nextButton.isEnabled = false
             }
-            isAnswered(currentIndex)
             updateQuestion()
         }
 
         previousButton.setOnClickListener {
-            if (currentIndex != 0) {
-                currentIndex -= 1
+            if (model.currentIndex != 0) {
+                model.currentIndex -= 1
                 updateQuestion()
             }
         }
@@ -83,10 +77,16 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    private fun isAnswered(index: Int) {
-        val isQuestionAnswered = questionBank[index].answered
-        trueButton.isEnabled = !isQuestionAnswered
-        falseButton.isEnabled = !isQuestionAnswered
+    private fun isAnswered() {
+        if (model.currentQuestionAnswered) {
+            trueButton.isEnabled = false
+            falseButton.isEnabled = false
+        }
+    }
+
+    private fun enableButtons() {
+        trueButton.isEnabled = true
+        falseButton.isEnabled = true
     }
 
     override fun onStart() {
@@ -102,6 +102,12 @@ class MainActivity : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
         Log.d(TAG, "onPause is called!!!")
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        Log.i(TAG, "onSaveInstanceState is called!!!")
+        outState.putInt(KEY_INDEX, model.currentIndex)
     }
 
     override fun onStop() {
@@ -120,27 +126,24 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateQuestion() {
-        val questionTextResId = questionBank[currentIndex].textResId
+//        Log.d(TAG, "Updating question text", Exception())
+        val questionTextResId = model.currentQuestionText
         questionTextView.setText(questionTextResId)
     }
 
     private fun checkAnswer(userAnswer: Boolean) {
-        // disable buttons when answered
-        trueButton.isEnabled = false
-        falseButton.isEnabled = false
-        questionBank[currentIndex].answered = true
-
-        val correctAnswer = questionBank[currentIndex].answer
+        model.currentQuestionAnswered = true
+        val correctAnswer = model.currentQuestionAnswer
         var messageId = ""
         if (userAnswer == correctAnswer) {
-            score+=1
+            model.score+=1
             messageId = getString(R.string.correct_toast)
-            Log.d(TAG, "Current score is: $score")
+            Log.d(TAG, "Current score is: ${model.score}")
         } else {
             messageId = getString(R.string.incorrect_toast)
         }
-        if (questionBank[currentIndex] == questionBank[lastIndex]) {
-            messageId = getString(R.string.final_score) + score.toString()
+        if (model.currentIndex == model.lastIndex) {
+            messageId = getString(R.string.final_score) + model.score.toString()
             previousButton.isEnabled = false
         }
 
