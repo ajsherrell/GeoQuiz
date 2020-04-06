@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModelProvider
 
 private const val TAG = "MainActivity"
 private const val KEY_INDEX = "index"
+private const val REQUEST_CODE_CHEAT = 0
 
 class MainActivity : AppCompatActivity() {
 
@@ -20,6 +21,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var nextButton: ImageButton
     private lateinit var previousButton: ImageButton
     private lateinit var questionTextView: TextView
+    private lateinit var cheatButton: Button
 
     private val model: QuizViewModel by lazy {
         val factory = QuizViewModelFactory()
@@ -44,6 +46,7 @@ class MainActivity : AppCompatActivity() {
         nextButton = findViewById(R.id.next_button)
         previousButton = findViewById(R.id.previous_button)
         questionTextView = findViewById(R.id.question_text_view)
+        cheatButton = findViewById(R.id.cheat_button)
 
         trueButton.setOnClickListener {
             model.currentQuestionAnswered = true
@@ -71,6 +74,13 @@ class MainActivity : AppCompatActivity() {
                 model.currentIndex -= 1
                 updateQuestion()
             }
+        }
+
+        cheatButton.setOnClickListener {
+            //start cheat activity
+            val answerIsTrue = model.currentQuestionAnswer
+            val intent = CheatActivity.newIntent(this@MainActivity, answerIsTrue)
+            startActivityForResult(intent, REQUEST_CODE_CHEAT)
         }
 
         updateQuestion()
