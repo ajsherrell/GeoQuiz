@@ -22,4 +22,5 @@
     <string name="judgment_toast">Cheating is wrong.</string>
     <string name="no_cheat_tokens">Sorry, no cheat tokens left!</string>
     <string name="cheat_tokens_left">Cheat Tokens Remaining: %1$d</string>
+    <string name="android_version">Current Device Version: %s</string>
 </resources>
