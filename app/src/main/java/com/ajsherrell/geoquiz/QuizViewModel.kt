@@ -27,6 +27,7 @@ class QuizViewModel : ViewModel() {
     var currentIndex = 0
     var lastIndex = questionBank.size - 1
     var score = 0
+    var isCheater = false
 
     var currentQuestionAnswered = questionBank[currentIndex].answered
 

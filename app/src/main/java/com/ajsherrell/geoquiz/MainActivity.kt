@@ -1,5 +1,7 @@
 package com.ajsherrell.geoquiz
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.Gravity
@@ -87,6 +89,16 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode != Activity.RESULT_OK) {
+            return
+        }
+        if (requestCode == REQUEST_CODE_CHEAT) {
+            model.isCheater = data?.getBooleanExtra(EXTRA_ANSWER_SHOWN, false) ?: false
+        }
+    }
+
     private fun isAnswered() {
         if (model.currentQuestionAnswered) {
             trueButton.isEnabled = false
@@ -144,18 +156,19 @@ class MainActivity : AppCompatActivity() {
     private fun checkAnswer(userAnswer: Boolean) {
         model.currentQuestionAnswered = true
         val correctAnswer = model.currentQuestionAnswer
-        var messageId = ""
         if (userAnswer == correctAnswer) {
             model.score+=1
-            messageId = getString(R.string.correct_toast)
             Log.d(TAG, "Current score is: ${model.score}")
-        } else {
-            messageId = getString(R.string.incorrect_toast)
         }
         if (model.currentIndex == model.lastIndex) {
-            messageId = getString(R.string.final_score) + model.score.toString()
             previousButton.isEnabled = false
         }
+        val messageId = when {
+            model.isCheater -> R.string.judgment_toast
+            model.currentIndex == model.lastIndex -> R.string.final_score
+            userAnswer == correctAnswer -> R.string.correct_toast
+            else -> R.string.incorrect_toast
+         }
 
         //reference: https://www.journaldev.com/96/android-toast-with-kotlin
         val toast = Toast.makeText(this, messageId, Toast.LENGTH_SHORT)
