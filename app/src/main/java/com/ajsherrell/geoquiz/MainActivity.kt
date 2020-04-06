@@ -84,14 +84,21 @@ class MainActivity : AppCompatActivity() {
         }
 
         cheatButton.setOnClickListener {
-            //start cheat activity
-            val answerIsTrue = model.currentQuestionAnswer
-            val intent = CheatActivity.newIntent(this@MainActivity, answerIsTrue)
-            val options = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                val options = ActivityOptions.makeClipRevealAnimation(it, 0,0, it.width, it.height)
-                startActivityForResult(intent, REQUEST_CODE_CHEAT, options.toBundle())
+            val cheatMessage = ""
+            if (model.tokens <= 3 && model.tokens != 0) {
+                model.tokens-=1
+                Toast.makeText(this, resources.getString(R.string.cheat_tokens_left, model.tokens), Toast.LENGTH_SHORT).show()
+                val answerIsTrue = model.currentQuestionAnswer
+                val intent = CheatActivity.newIntent(this@MainActivity, answerIsTrue)
+                val options = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    val options = ActivityOptions.makeClipRevealAnimation(it, 0,0, it.width, it.height)
+                    startActivityForResult(intent, REQUEST_CODE_CHEAT, options.toBundle())
+                } else {
+                    startActivityForResult(intent, REQUEST_CODE_CHEAT)
+                }
             } else {
-                startActivityForResult(intent, REQUEST_CODE_CHEAT)
+                cheatButton.isEnabled = false
+                Toast.makeText(this, R.string.no_cheat_tokens, Toast.LENGTH_SHORT).show()
             }
         }
 
