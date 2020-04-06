@@ -15,6 +15,7 @@ import androidx.lifecycle.ViewModelProvider
 private const val TAG = "MainActivity"
 private const val KEY_INDEX = "index"
 private const val REQUEST_CODE_CHEAT = 0
+private const val IS_CHEATER = "isCheater"
 
 class MainActivity : AppCompatActivity() {
 
@@ -37,6 +38,7 @@ class MainActivity : AppCompatActivity() {
 
         val currentIndex = savedInstanceState?.getInt(KEY_INDEX, 0) ?: 0
         model.currentIndex = currentIndex
+        model.isCheater = savedInstanceState?.getBoolean(IS_CHEATER, false) ?: false
 
         //depreciated
 //        val provider: ViewModelProvider = ViewModelProviders.of(this)
@@ -64,6 +66,7 @@ class MainActivity : AppCompatActivity() {
 
         nextButton.setOnClickListener {
             model.moveToNext()
+            model.isCheater = false
             enableButtons()
             if (model.currentIndex == model.lastIndex) {
                 nextButton.isEnabled = false
@@ -130,6 +133,7 @@ class MainActivity : AppCompatActivity() {
         super.onSaveInstanceState(outState)
         Log.i(TAG, "onSaveInstanceState is called!!!")
         outState.putInt(KEY_INDEX, model.currentIndex)
+        outState.putBoolean(IS_CHEATER, model.isCheater)
     }
 
     override fun onStop() {
@@ -162,10 +166,11 @@ class MainActivity : AppCompatActivity() {
         }
         if (model.currentIndex == model.lastIndex) {
             previousButton.isEnabled = false
+            cheatButton.isEnabled = false
+            Toast.makeText(this, this.resources.getString(R.string.final_score, model.score), Toast.LENGTH_LONG).show()
         }
         val messageId = when {
             model.isCheater -> R.string.judgment_toast
-            model.currentIndex == model.lastIndex -> R.string.final_score
             userAnswer == correctAnswer -> R.string.correct_toast
             else -> R.string.incorrect_toast
          }

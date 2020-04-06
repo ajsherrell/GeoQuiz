@@ -10,6 +10,8 @@ import androidx.appcompat.app.AppCompatActivity
 
 private const val EXTRA_ANSWER_IS_TRUE = "com.ajsherrell.geoquiz.answer_is_true"
 const val EXTRA_ANSWER_SHOWN = "com.ajsherrell.geoquiz.answer_shown"
+private const val TAG = "CheatActivity"
+private const val IS_CHEATER = "isCheater"
 
 class CheatActivity : AppCompatActivity() {
     private lateinit var answerTextView: TextView
